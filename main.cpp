@@ -1,121 +1,91 @@
 #include <iostream>
+#include <vector>
+#include <string>
+
 using namespace std;
 
-//FUNCTION WHEN GUESSED LOCATION IS SAME AS SHIP LOCATION
-void hitShip(int row, int column, string &row1, string &row3, string &row5) {
-    if (column == 1) {
-        if (row == 1) {
-            row1.at(1) = 'X';
-        } else if (row == 2) {
-            row3.at(1) = 'X';
-        } else {
-            row5.at(1) = 'X';
-        }
-    } else if (column == 2) {
-        if (row == 1) {
-            row1.at(5) = 'X';
-        } else if (row == 2) {
-            row3.at(5) = 'X';
-        } else {
-            row5.at(5) = 'X';
-        }
-    } else {
-        if (row == 1) {
-            row1.at(9) = 'X';
-        } else if (row == 2) {
-            row3.at(9) = 'X';
-        } else {
-            row5.at(9) = 'X';
-        }
-    }
-    cout << "Hit!" << endl;
-}
-
-//FUNCTION WHEN GUESSED LOCATION IS NOT SAME AS SHIP LOCATION
-void missShip(int row, int column, string &row1, string &row3, string &row5) {
-    if (column == 1) {
-        if (row == 1) {
-            row1.at(1) = 'O';
-        } else if (row == 2) {
-            row3.at(1) = 'O';
-        } else {
-            row5.at(1) = 'O';
-        }
-    } else if (column == 2) {
-        if (row == 1) {
-            row1.at(5) = 'O';
-        } else if (row == 2) {
-            row3.at(5) = 'O';
-        } else {
-            row5.at(5) = 'O';
-        }
-    } else {
-        if (row == 1) {
-            row1.at(9) = 'O';
-        } else if (row == 2) {
-            row3.at(9) = 'O';
-        } else {
-            row5.at(9) = 'O';
-        }
-    }
-    cout << "Miss!" << endl;
-}
-
-//MAIN FUNCTION
 int main() {
-
-//CREATING OF VARIABLES
-    bool done;
-    done == false;
-    int colLoc;
-    int rowLoc;
-    int colGuess;
-    int rowGuess;
-    int numGuesses = 0;
-
-//GENERATING TWO RANDOM VARIABLES FOR SHIP LOCATION
     srand(time(NULL));
-    colLoc = rand() % 2 + 1;
-    rowLoc = rand() % 2 + 1;
+    int rowLoc = rand() % 3 + 1;//generates random row
+    int colLoc = rand() % 3 + 1;//generates random column
+    int rowGuess;
+    int colGuess;
 
-//CREATING STRINGS FOR EACH ROW OF THE 3X3 MATRIX
-    string rowOne = "   !   !   ";
-    string rowTwo = "~~~~~~~~~~~~";
-    string rowThree = "   !   !   ";
-    string rowFour = "~~~~~~~~~~~~";
-    string rowFive = "   !   !   ";
+    vector<string> matrix(9, " ");
+    bool hit = false;
+    int index = 0;
+    int numGuesses = 0;//keeps track of number of guesses
+    bool invalidNum = false;//variable for guesses outside 1-3 range
 
-//WHILE LOOP THAT CONTINUES TO RUN UNTIL THE SHIP IS HIT
-    while (done == false) {
+
+    while (hit == false) {//while loop for guessing
+        //user enters guess location
         cout << "Guess column:";
         cin >> colGuess;
         cout << "Guess row:";
         cin >> rowGuess;
-        numGuesses = numGuesses + 1;
 
-//IF STATEMENT FOR WHEN THE SHIP IS HIT
-        if (colGuess == colLoc && rowGuess == rowLoc) {
-            hitShip(rowGuess, colGuess, rowOne, rowThree, rowFive);
-            cout << "Guess number: " << numGuesses << endl;
-            cout << rowOne << endl;
-            cout << rowTwo << endl;
-            cout << rowThree << endl;
-            cout << rowFour << endl;
-            cout << rowFive << endl;
-            done = true;
-//IF STATEMENT FOR WHEN ROW OR COLUMN VALUE ARE OUR OF 1-3 RANGE
-        } else if ((rowGuess < 1 || rowGuess > 3) || (colGuess < 1 || colGuess > 3)) {
-            cout << "ERROR. Row and column must be between 1 and 3." << endl;
+        //next two if statements for invalid guesses
+        if (rowGuess != 1 && rowGuess != 2 && rowGuess != 3) {
+            cout << "ERROR. Row and column must be between 1 and 3.";
+            invalidNum = true;
+            break;
         }
-//IF STATEMENT FOR WHEN THE SHIP IS MISSED
-        else {
-            missShip(rowGuess, colGuess, rowOne, rowThree, rowFive);
-            cout << "Guess number: " << numGuesses << endl;
-            cout << rowOne << endl;
-            cout << rowTwo << endl;
-            cout << rowThree << endl;
-            cout << rowFour << endl;
-            cout << rowFive << endl;
+
+        if (colGuess != 1 && colGuess != 2 && colGuess != 3) {
+            cout << "ERROR. Row and column must be between 1 and 3.";
+            invalidNum = true;
+            break;
         }
+
+        //next 3 if statements for location of XO
+        if (rowGuess == 1) {
+            if (colGuess == 1) {
+                index = 0;
+            } else if (colGuess == 2) {
+                index = 1;
+            } else {
+                index = 2;
+            }
+        } else if (rowGuess == 2) {
+            if (colGuess == 1) {
+                index = 3;
+            } else if (colGuess == 2) {
+                index = 4;
+            } else {
+                index = 5;
+            }
+        } else {
+            if (colGuess == 1) {
+                index = 6;
+            } else if (colGuess == 2) {
+                index = 7;
+            } else {
+                index = 8;
+            }
+        }
+
+
+        //hit or miss
+        if (rowGuess == rowLoc && colGuess == colLoc) {
+            matrix.at(index) = "X";
+            hit = true;
+        } else {
+            matrix.at(index) = "O";
+        }
+
+        //prints matrix
+        cout << matrix.at(0) << "!" << matrix.at(1) << "!" << matrix.at(2) << endl;
+        cout << "~~~~~" << endl;
+        cout << matrix.at(3) << "!" << matrix.at(4) << "!" << matrix.at(5) << endl;
+        cout << "~~~~~" << endl;
+        cout << matrix.at(6) << "!" << matrix.at(7) << "!" << matrix.at(8) << endl;
+        numGuesses++;
     }
+    //correct guess
+    if (invalidNum == false) {
+        cout << "Hit!" << endl;
+        cout << "Num Guesses: " << numGuesses;
+    }
+    return 0;
 }
